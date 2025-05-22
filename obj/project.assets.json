@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jsande13\\Documents\\Broader_Project\\Broader_Project.csproj",
+      "projectUniqueName": "C:\\Users\\jsande13\\Documents\\New folder\\password-hacking\\Broader_Project.csproj",
       "projectName": "Broader_Project",
-      "projectPath": "C:\\Users\\jsande13\\Documents\\Broader_Project\\Broader_Project.csproj",
+      "projectPath": "C:\\Users\\jsande13\\Documents\\New folder\\password-hacking\\Broader_Project.csproj",
       "packagesPath": "C:\\Users\\jsande13\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jsande13\\Documents\\Broader_Project\\obj\\",
+      "outputPath": "C:\\Users\\jsande13\\Documents\\New folder\\password-hacking\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\jsande13\\AppData\\Roaming\\NuGet\\NuGet.Config"
