@@ -32,21 +32,35 @@ class Program
 
         return input.ToString();
     }
-    
+
     // Guesses Password
-    static void Guessing(List<string> values, string password, int guessIndex, int guessesTotal)
+    static void Guessing(List<string> values, string password)
     {
-        string guess = values[guessIndex];
-
-        if (password == guess)
+        // Try all single-letter guesses
+        foreach (var letter in values)
         {
-            Console.WriteLine($"\nYour password is {guess}");
+            if (letter == password)
+            {
+                Console.WriteLine($"\nYour password is {letter}");
+                return;
+            }
         }
 
-        else
+        // Try all two-letter combinations
+        foreach (var first in values)
         {
-            Guessing(values, password, guessIndex + 1, guessesTotal + 1);
+            foreach (var second in values)
+            {
+                string guess = first + second;
+                if (guess == password)
+                {
+                    Console.WriteLine($"\nYour password is {guess}");
+                    return;
+                }
+            }
         }
+
+        Console.WriteLine("\nPassword not found with one or two-letter guesses.");
     }
 
     // Main Program
@@ -65,7 +79,7 @@ class Program
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                Console.WriteLine("Please Enter Text");
+                Console.WriteLine("\nPlease Enter Text");
             }
 
         } while (string.IsNullOrWhiteSpace(password));
@@ -77,11 +91,10 @@ class Program
 
 
         int guessesTotal = 0;
-        int guessIndex = 0;
 
         // Start timer
         stopwatch.Start();
-        Guessing(values, password, guessIndex, guessesTotal);
+        Guessing(values, password);
         stopwatch.Stop();
 
         Console.WriteLine("Elapsed time: {0} ms or {1} seconds", stopwatch.ElapsedMilliseconds, stopwatch.Elapsed.TotalSeconds);
