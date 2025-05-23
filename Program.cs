@@ -60,6 +60,23 @@ class Program
             }
         }
 
+        // Try all three-letter combinations
+        foreach (var first in values)
+        {
+            foreach (var second in values)
+            {
+                foreach (var third in values)
+                {
+                    string guess = first + second + third;
+                    if (guess == password)
+                    {
+                        Console.WriteLine($"\nYour password is {guess}");
+                        return;
+                    }
+                }
+            }
+        }
+
         Console.WriteLine("\nPassword not found with one or two-letter guesses.");
     }
 
@@ -87,7 +104,11 @@ class Program
         // Password entered - Continue
         Stopwatch stopwatch = new Stopwatch();
 
-        List<string> values = new List<string> { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+        List<string> values = new List<string> {
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?", "{", "}", "/", "'","\\",",","|","+","=","\"","-","_"
+        };
 
 
         int guessesTotal = 0;
