@@ -3,11 +3,19 @@ using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.VisualBasic.FileIO;
+using System.Reflection.PortableExecutable;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Threading;
+using System.ComponentModel;
 
 
+
+// Current Program demostrates the processing speed of cpu to bruteforce a password by technique of multiprocessing and threading
 class Program
 {
-    // Hides password text
+    // Hides text as user inputs password
     static string ReadHiddenInput()
     {
         StringBuilder input = new StringBuilder();
@@ -33,55 +41,130 @@ class Program
         return input.ToString();
     }
 
+
+
+
     // Guesses Password
-    static void Guessing(List<string> values, string password)
+    static void Guessing(List<string> values, string password, int guessesTotal)
     {
-        // Try all single-letter guesses
-        foreach (var letter in values)
+        guessesTotal = 0;
+
+        // Try 1-digit guesses
+        foreach (var guess in values)
         {
-            if (letter == password)
+            ++guessesTotal;
+            if (guess == password)
             {
-                Console.WriteLine($"\nYour password is {letter}");
+                Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
                 return;
             }
         }
 
-        // Try all two-letter combinations
+        // Try 2-digit combinations
         foreach (var first in values)
         {
             foreach (var second in values)
             {
+                ++guessesTotal;
                 string guess = first + second;
                 if (guess == password)
                 {
-                    Console.WriteLine($"\nYour password is {guess}");
+                    Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
                     return;
                 }
             }
         }
 
-        // Try all three-letter combinations
+        // Try 3-digit combinations
         foreach (var first in values)
         {
             foreach (var second in values)
             {
                 foreach (var third in values)
                 {
+                    ++guessesTotal;
                     string guess = first + second + third;
                     if (guess == password)
                     {
-                        Console.WriteLine($"\nYour password is {guess}");
+                        Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
                         return;
                     }
                 }
             }
         }
 
-        Console.WriteLine("\nPassword not found with one or two-letter guesses.");
+        // Try 4-digit combinations
+        foreach (var first in values)
+        {
+            foreach (var second in values)
+            {
+                foreach (var third in values)
+                {
+                    foreach (var fourth in values)
+                    {
+                        ++guessesTotal;
+                        string guess = first + second + third + fourth;
+                        if (guess == password)
+                        {
+                            Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        Console.WriteLine($"\nPassword is greater than 4 characters. There are 7.3 billion combinations and can take up to 84 days to discover.");
+    }
+
+
+
+    // Multi Threading function
+    static void Multi(List<string> values, int guessesTotal, string password, int startPosition, CancellationToken token, CancellationTokenSource cts)
+    {
+        for (int i = startPosition; i < values.Count; i++)
+        {
+            // stop if cancellation requested
+            if (token.IsCancellationRequested)
+                return;
+
+            foreach (var second in values)
+            {
+                foreach (var third in values)
+                {
+                    foreach (var fourth in values)
+                    {
+                        foreach (var fifth in values)
+                        {
+                            foreach (var sixth in values)
+                            {
+                                foreach (var seventh in values)
+                                {
+                                    foreach (var eighth in values)
+                                    {
+                                        foreach (var ninth in values)
+                                        {
+                                            ++guessesTotal;
+                                            string guess = values[i] + second + third + fourth + fifth + sixth + seventh + eighth;
+                                            if (guess == password)
+                                            {
+                                                Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
+                                                cts.Cancel();  // signal cancellation to all other tasks
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Main Program
-    static void Main()
+    static async Task Main()
     {
         // Prompt User to enter Password
         Console.Write("Hello and Welcome\n");
@@ -111,13 +194,43 @@ class Program
         };
 
 
+        // Track number of Guesses
         int guessesTotal = 0;
 
         // Start timer
         stopwatch.Start();
-        Guessing(values, password);
+        Guessing(values, password, guessesTotal);
         stopwatch.Stop();
 
         Console.WriteLine("Elapsed time: {0} ms or {1} seconds", stopwatch.ElapsedMilliseconds, stopwatch.Elapsed.TotalSeconds);
+
+
+        // Multi Threading Use 
+        Console.WriteLine("\n\n\nWe will now use multithreading");
+
+
+        var cts = new CancellationTokenSource();
+        CancellationToken token = cts.Token;
+
+        List<Task> multiThread = new List<Task>();
+
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 0, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 10, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 20, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 30, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 40, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 50, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 60, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 70, token, cts), token));
+        multiThread.Add(Task.Run(() => Multi(values, guessesTotal, password, 80, token, cts), token));
+
+        try
+        {
+            await Task.WhenAll(multiThread);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("One task completed early, others cancelled.");
+        }
     }
 }
