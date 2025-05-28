@@ -42,83 +42,6 @@ class Program
     }
 
 
-
-
-    // Guesses Password
-    static void Guessing(List<string> values, string password, int guessesTotal)
-    {
-        guessesTotal = 0;
-
-        // Try 1-digit guesses
-        foreach (var guess in values)
-        {
-            ++guessesTotal;
-            if (guess == password)
-            {
-                Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
-                return;
-            }
-        }
-
-        // Try 2-digit combinations
-        foreach (var first in values)
-        {
-            foreach (var second in values)
-            {
-                ++guessesTotal;
-                string guess = first + second;
-                if (guess == password)
-                {
-                    Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
-                    return;
-                }
-            }
-        }
-
-        // Try 3-digit combinations
-        foreach (var first in values)
-        {
-            foreach (var second in values)
-            {
-                foreach (var third in values)
-                {
-                    ++guessesTotal;
-                    string guess = first + second + third;
-                    if (guess == password)
-                    {
-                        Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
-                        return;
-                    }
-                }
-            }
-        }
-
-        // Try 4-digit combinations
-        foreach (var first in values)
-        {
-            foreach (var second in values)
-            {
-                foreach (var third in values)
-                {
-                    foreach (var fourth in values)
-                    {
-                        ++guessesTotal;
-                        string guess = first + second + third + fourth;
-                        if (guess == password)
-                        {
-                            Console.WriteLine($"\nYour password is {guess} in {guessesTotal} trys");
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        Console.WriteLine($"\nPassword is greater than 4 characters. There are 7.3 billion combinations and can take up to 84 days to discover.");
-    }
-
-
-
     // Multi Threading function
     static void Multi(List<string> values, int guessesTotal, string password, int startPosition, CancellationToken token, CancellationTokenSource cts)
     {
@@ -163,6 +86,10 @@ class Program
         }
     }
 
+
+
+    static bool passwordFound = false;
+
     // Main Program
     static async Task Main()
     {
@@ -187,6 +114,7 @@ class Program
         // Password entered - Continue
         Stopwatch stopwatch = new Stopwatch();
 
+        // All possible characters
         List<string> values = new List<string> {
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
@@ -199,7 +127,12 @@ class Program
 
         // Start timer
         stopwatch.Start();
-        Guessing(values, password, guessesTotal);
+        // Guessing(values, password, guessesTotal);
+        for (int length = 1; !passwordFound; length++)
+        {
+            GenerateCombinations("", length, values, password);
+        }
+        // Stop timer
         stopwatch.Stop();
 
         Console.WriteLine("Elapsed time: {0} ms or {1} seconds", stopwatch.ElapsedMilliseconds, stopwatch.Elapsed.TotalSeconds);
@@ -231,6 +164,31 @@ class Program
         catch (OperationCanceledException)
         {
             Console.WriteLine("One task completed early, others cancelled.");
+        }
+
+
+
+    }
+
+    // Recursive call to try all possibilities
+    static void GenerateCombinations(string current, int maxLength, List<string> vaules, string password)
+    {
+        if (passwordFound) return;
+
+        if (current.Length == maxLength)
+        {
+            Console.WriteLine($"Trying: {current}");
+            if (current == password)
+            {
+                Console.WriteLine($"Password found: {current}");
+                passwordFound = true;
+            }
+            return;
+        }
+
+        foreach (string c in vaules)
+        {
+            GenerateCombinations(current + c, maxLength, vaules, password);
         }
     }
 }
